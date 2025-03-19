@@ -1,0 +1,94 @@
+---
+
+
+title: "BCB546_R_programming"
+author: "Sristi"
+date: "2025-03-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Basic codes to load files into datastream, inspect them and merge two data files to process their data
+
+```url_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/fang_et_al_genotypes.txt"
+print(url_genotypes)
+url_snp_position <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/snp_position.txt"
+genotypes <- read.table(url_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+snp_position <- read.table(url_snp_position, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+head(genotypes)  # View the first few rows of genotypes data
+head(genotypes)
+head(snp_position)
+str(genotypes)
+str(snp_position)
+dim(genotypes)
+dim(snp_position)
+object.size(genotypes)
+object.size(snp_position)
+num_lines_snp_position <- length(count.fields(url_snp_position, sep = "\t"))
+num_lines_genotypes
+url_transposed <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+print(url_transposed)
+transposed <- read.table(url_transposed, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+str(transposed)
+str(snp_position) # Check the structure of the loaded data to ensure it's a data frame
+url_transposed_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+transposed_genotypes <- read.table(url_transposed_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+transposed_genotypes <- transposed_genotypes[-c(1, 2), ]
+str(transposed_genotypes)
+head(transposed_genotypes)
+colnames(transposed_genotypes)
+colnames(snp_position)
+url_original_transposed_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+original_transposed_genotypes <- read.table(url_original_transposed_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE) #Reloaded the original transposed_genotypes file as a backup
+head(original_transposed_genotypes)
+url_transposed_raw <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt" # URL for the transposed_genotypes.txt file on GitHub
+url_transposed_raw <- read.table(url_transposed_raw, header = TRUE, sep = "\t", stringsAsFactors = FALSE) # Load the file from the GitHub URL
+View(url_transposed_raw)
+new_header <- as.character(url_transposed_raw[1, ]) # Extract the first row as a character vector
+View(url_transposed_raw)
+url_transposed_no_header <- url_transposed_raw[-1, ] # Remove the first row (old header)
+colnames(url_transposed_no_header) <- new_header #Set the first row as column names
+url_transposed_no_header_cleaned <- url_transposed_no_header[-1, ] #Remove the first row (which is now the header row)
+head(url_transposed_no_header_cleaned) # View the cleaned data
+new_header2 <- as.character(url_transposed_raw[2, ])
+View(new_header2)
+View(url_transposed_no_header)
+url_transposed_no_header2 <- url_transposed_raw[-1, ]
+colnames(url_transposed_no_header2) <- new_header2
+url_transposed_no_header_cleaned2 <- url_transposed_no_header2[-1, ]
+head(url_transposed_no_header_cleaned2) #This file has the groups as header and the rows that match with the snp_position file
+colnames(url_transposed_no_header_cleaned2) #To check the current column names
+colnames(url_transposed_no_header_cleaned2)[colnames(url_transposed_no_header_cleaned2) == "Group"] <- "SNP_ID" #To change the header name of the first column from "Oldname" to "Newname"
+merged_data <- merge(url_snp_position, url_transposed_no_header_cleaned2, by = "SNP_ID", all = TRUE) #Merged the two data files url_snp_position and url_transposed_no_header_cleaned2
+merged_data_backup <- merged_data #Created a backup for the merged data files (number of rows and columns got changed here, need to check that)
+merged_data <- merged_data[, -2] #removed the column 2 which was cdv_marker that is not needed
+
+###Pulled the columns that contains SNP_ID, Chromosome, Position, ZMMIL, ZMMLR, ZMMMR from the merged_data file to merged_data_subset file
+selected_columns <- grep("SNP_ID|Chromosome|Position|ZMMIL|ZMMLR|ZMMMR", names(merged_data), value = TRUE) 
+merged_data_subset <- merged_data[, selected_columns] 
+
+#Inspect to confirm the samples in the file
+count_headers_with_ZMMIL <- sum(grepl("ZMMIL", colnames(merged_data_subset))) #To count the number of headers that have ZMMIL
+print(count_headers_with_ZMMIL) #[1] 290
+count_headers_with_ZMMLR <- sum(grepl("ZMMLR", colnames(merged_data_subset))) #To count the number of headers that have ZMMLR
+print(count_headers_with_ZMMLR) #[1] 1256
+count_headers_with_ZMMMR <- sum(grepl("ZMMMR", colnames(merged_data_subset))) #To count the number of headers that have ZMMMR
+print(count_headers_with_ZMMMR) #[1] 27
+
+url_transposed_genotypes_version <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+transposed_genotypes_version <- read.table(url_transposed_genotypes_version, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+write.table(merged_data_subset, file = "merged_data_subset", sep = "\t", row.names = FALSE, quote = FALSE) #code to put files from data to working directory
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,533 @@
+---
+
+
+title: "BCB546_R_programming"
+author: "Sristi"
+date: "2025-03-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+url_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/fang_et_al_genotypes.txt"
+print(url_genotypes)
+url_snp_position <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/snp_position.txt"
+genotypes <- read.table(url_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+snp_position <- read.table(url_snp_position, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# View the first few rows of genotypes data
+head(genotypes)  
+head(genotypes)
+head(snp_position)
+str(genotypes)
+str(snp_position)
+dim(genotypes)
+dim(snp_position)
+object.size(genotypes)
+object.size(snp_position)
+num_lines_snp_position <- length(count.fields(url_snp_position, sep = "\t"))
+url_transposed <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+print(url_transposed)
+transposed <- read.table(url_transposed, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Check the structure of the loaded data to ensure it's a data frame
+str(transposed)
+str(snp_position) 
+
+url_transposed_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+transposed_genotypes <- read.table(url_transposed_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+transposed_genotypes <- transposed_genotypes[-c(1, 2), ]
+str(transposed_genotypes)
+head(transposed_genotypes)
+colnames(transposed_genotypes)
+colnames(snp_position)
+url_original_transposed_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+
+#Reloaded the original transposed_genotypes file as a backup
+original_transposed_genotypes <- read.table(url_original_transposed_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE) 
+head(original_transposed_genotypes)
+url_transposed_raw <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt" # URL for the transposed_genotypes.txt file on GitHub
+
+# Load the file from the GitHub URL
+url_transposed_raw <- read.table(url_transposed_raw, header = TRUE, sep = "\t", stringsAsFactors = FALSE) 
+View(url_transposed_raw)
+
+new_header <- as.character(url_transposed_raw[1, ]) # Extract the first row as a character vector
+View(url_transposed_raw)
+url_transposed_no_header <- url_transposed_raw[-1, ] # Remove the first row (old header)
+colnames(url_transposed_no_header) <- new_header #Set the first row as column names
+url_transposed_no_header_cleaned <- url_transposed_no_header[-1, ] #Remove the first row (which is now the header row)
+head(url_transposed_no_header_cleaned) # View the cleaned data
+new_header2 <- as.character(url_transposed_raw[2, ])
+View(new_header2)
+View(url_transposed_no_header)
+url_transposed_no_header2 <- url_transposed_raw[-1, ]
+colnames(url_transposed_no_header2) <- new_header2
+url_transposed_no_header_cleaned2 <- url_transposed_no_header2[-1, ]
+
+#This file has the groups as header and the rows that match with the snp_position file
+head(url_transposed_no_header_cleaned2) 
+#To check the current column names
+colnames(url_transposed_no_header_cleaned2) 
+#To change the header name of the first column from "Oldname" to "Newname"
+colnames(url_transposed_no_header_cleaned2)[colnames(url_transposed_no_header_cleaned2) == "Group"] <- "SNP_ID" 
+#Merged the two data files url_snp_position and url_transposed_no_header_cleaned2
+
+
+###Pulled the columns that contains SNP_ID, Chromosome, Position, ZMMIL, ZMMLR, ZMMMR from the merged_data file to merged_data_subset file
+selected_columns <- grep("SNP_ID|Chromosome|Position|ZMMIL|ZMMLR|ZMMMR", names(merged_data_subset), value = TRUE) 
+
+#Inspect to confirm the samples in the file
+count_headers_with_ZMMIL <- sum(grepl("ZMMIL", colnames(merged_data_subset))) #To count the number of headers that have ZMMIL
+print(count_headers_with_ZMMIL) #[1] 290
+count_headers_with_ZMMLR <- sum(grepl("ZMMLR", colnames(merged_data_subset))) #To count the number of headers that have ZMMLR
+print(count_headers_with_ZMMLR) #[1] 1256
+count_headers_with_ZMMMR <- sum(grepl("ZMMMR", colnames(merged_data_subset))) #To count the number of headers that have ZMMMR
+print(count_headers_with_ZMMMR) #[1] 27
+
+url_transposed_genotypes_version <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/transposed_genotypes.txt"
+transposed_genotypes_version <- read.table(url_transposed_genotypes_version, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+write.table(merged_data_subset, file = "merged_data_subset", sep = "\t", row.names = FALSE, quote = FALSE) #code to put files from data to working directory
+
+#Extract chromosome 1-10 data from merged_data_subset file
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 1, ]), file = "maize_chr1.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 2, ]), file = "maize_chr2.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 3, ]), file = "maize_chr3.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 4, ]), file = "maize_chr4.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 5, ]), file = "maize_chr5.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 7, ]), file = "maize_chr7.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 8, ]), file = "maize_chr8.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 9, ]), file = "maize_chr9.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 10, ]), file = "maize_chr10.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+
+#Load data from working directory to data frame
+maize_chr1 <- read.table("maize_chr1.txt", header = TRUE, sep = "\t")
+maize_chr2 <- read.table("maize_chr2.txt", header = TRUE, sep = "\t")
+maize_chr3 <- read.table("maize_chr3.txt", header = TRUE, sep = "\t")
+maize_chr4 <- read.table("maize_chr4.txt", header = TRUE, sep = "\t")
+maize_chr5 <- read.table("maize_chr5.txt", header = TRUE, sep = "\t")
+maize_chr6 <- read.table("maize_chr6.txt", header = TRUE, sep = "\t")
+maize_chr7 <- read.table("maize_chr7.txt", header = TRUE, sep = "\t")
+maize_chr8 <- read.table("maize_chr8.txt", header = TRUE, sep = "\t")
+maize_chr9 <- read.table("maize_chr9.txt", header = TRUE, sep = "\t")
+maize_chr10 <- read.table("maize_chr10.txt", header = TRUE, sep = "\t")
+
+##Sorting the chromosome data in increasing order for Positions column
+#For chromosome 1
+# Separate alphabetic and numeric positions
+alphabetic_rows <- maize_chr1[grepl("[^0-9]", maize_chr1$Position), ]
+numeric_rows <- maize_chr1[!grepl("[^0-9]", maize_chr1$Position), ]
+# Sort numeric rows in increasing order
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+# Combine alphabetic rows at the top, followed by sorted numeric rows
+maize_chr1_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+#Reset row numbers
+rownames(maize_chr1_sorted) <- NULL
+# Save the sorted file in the working directory from the data frame
+write.table(maize_chr1_sorted, "maize_chr1_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 2
+alphabetic_rows <- maize_chr2[grepl("[^0-9]", maize_chr2$Position), ]
+numeric_rows <- maize_chr2[!grepl("[^0-9]", maize_chr2$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr2_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr2_sorted) <- NULL
+write.table(maize_chr2_sorted, "maize_chr2_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 3
+alphabetic_rows <- maize_chr3[grepl("[^0-9]", maize_chr3$Position), ]
+numeric_rows <- maize_chr3[!grepl("[^0-9]", maize_chr3$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr3_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr3_sorted) <- NULL
+write.table(maize_chr3_sorted, "maize_chr3_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 4
+alphabetic_rows <- maize_chr4[grepl("[^0-9]", maize_chr4$Position), ]
+numeric_rows <- maize_chr4[!grepl("[^0-9]", maize_chr4$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr4_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr4_sorted) <- NULL
+write.table(maize_chr4_sorted, "maize_chr4_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 5
+alphabetic_rows <- maize_chr5[grepl("[^0-9]", maize_chr5$Position), ]
+numeric_rows <- maize_chr5[!grepl("[^0-9]", maize_chr5$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr5_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr5_sorted) <- NULL
+write.table(maize_chr5_sorted, "maize_chr5_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 6
+alphabetic_rows <- maize_chr6[grepl("[^0-9]", maize_chr6$Position), ]
+numeric_rows <- maize_chr6[!grepl("[^0-9]", maize_chr6$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr6_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr6_sorted) <- NULL
+write.table(maize_chr6_sorted, "maize_chr6_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 7
+alphabetic_rows <- maize_chr7[grepl("[^0-9]", maize_chr7$Position), ]
+numeric_rows <- maize_chr7[!grepl("[^0-9]", maize_chr7$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr7_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr7_sorted) <- NULL
+View(maize_chr7_sorted)
+write.table(maize_chr7_sorted, "maize_chr7_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 8
+alphabetic_rows <- maize_chr8[grepl("[^0-9]", maize_chr8$Position), ]
+numeric_rows <- maize_chr8[!grepl("[^0-9]", maize_chr8$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr8_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr8_sorted) <- NULL
+write.table(maize_chr8_sorted, "maize_chr8_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 9
+alphabetic_rows <- maize_chr9[grepl("[^0-9]", maize_chr9$Position), ]
+numeric_rows <- maize_chr9[!grepl("[^0-9]", maize_chr9$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr9_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr9_sorted) <- NULL
+write.table(maize_chr9_sorted, "maize_chr9_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+##For chromosome 10
+alphabetic_rows <- maize_chr10[grepl("[^0-9]", maize_chr10$Position), ]
+numeric_rows <- maize_chr10[!grepl("[^0-9]", maize_chr10$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+maize_chr10_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(maize_chr10_sorted) <- NULL
+write.table(maize_chr10_sorted, "maize_chr10_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+
+##Sorting the chromosome data in decreasing order for Positions column
+#For chromosome 1
+alphabetic_rows <- maize_chr1[grepl("[^0-9]", maize_chr1$Position), ]
+numeric_rows <- maize_chr1[!grepl("[^0-9]", maize_chr1$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr1_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr1_desc_sorted) <- NULL
+maize_chr1_desc_sorted[] <- lapply(maize_chr1_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr1_desc_sorted, "maize_chr1_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 2
+alphabetic_rows <- maize_chr2[grepl("[^0-9]", maize_chr2$Position), ]
+numeric_rows <- maize_chr2[!grepl("[^0-9]", maize_chr2$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr2_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr2_desc_sorted) <- NULL
+maize_chr2_desc_sorted[] <- lapply(maize_chr2_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr2_desc_sorted, "maize_chr2_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 3
+alphabetic_rows <- maize_chr3[grepl("[^0-9]", maize_chr3$Position), ]
+numeric_rows <- maize_chr3[!grepl("[^0-9]", maize_chr3$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr3_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr3_desc_sorted) <- NULL
+maize_chr3_desc_sorted[] <- lapply(maize_chr3_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr3_desc_sorted, "maize_chr3_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 4
+alphabetic_rows <- maize_chr4[grepl("[^0-9]", maize_chr4$Position), ]
+numeric_rows <- maize_chr4[!grepl("[^0-9]", maize_chr4$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr4_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr4_desc_sorted) <- NULL
+maize_chr4_desc_sorted[] <- lapply(maize_chr4_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr4_desc_sorted, "maize_chr4_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 5
+alphabetic_rows <- maize_chr5[grepl("[^0-9]", maize_chr5$Position), ]
+numeric_rows <- maize_chr5[!grepl("[^0-9]", maize_chr5$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr5_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr5_desc_sorted) <- NULL
+maize_chr5_desc_sorted[] <- lapply(maize_chr5_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr5_desc_sorted, "maize_chr5_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 6
+alphabetic_rows <- maize_chr6[grepl("[^0-9]", maize_chr6$Position), ]
+numeric_rows <- maize_chr6[!grepl("[^0-9]", maize_chr6$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr6_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr6_desc_sorted) <- NULL
+maize_chr6_desc_sorted[] <- lapply(maize_chr6_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr6_desc_sorted, "maize_chr6_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 7
+alphabetic_rows <- maize_chr7[grepl("[^0-9]", maize_chr7$Position), ]
+numeric_rows <- maize_chr7[!grepl("[^0-9]", maize_chr7$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr7_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr7_desc_sorted) <- NULL
+maize_chr7_desc_sorted[] <- lapply(maize_chr7_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr7_desc_sorted, "maize_chr7_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 8
+alphabetic_rows <- maize_chr8[grepl("[^0-9]", maize_chr8$Position), ]
+numeric_rows <- maize_chr8[!grepl("[^0-9]", maize_chr8$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr8_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr8_desc_sorted) <- NULL
+maize_chr8_desc_sorted[] <- lapply(maize_chr8_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr8_desc_sorted, "maize_chr8_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 9
+alphabetic_rows <- maize_chr9[grepl("[^0-9]", maize_chr9$Position), ]
+numeric_rows <- maize_chr9[!grepl("[^0-9]", maize_chr9$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr9_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr9_desc_sorted) <- NULL
+maize_chr9_desc_sorted[] <- lapply(maize_chr9_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr9_desc_sorted, "maize_chr9_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 10
+alphabetic_rows <- maize_chr10[grepl("[^0-9]", maize_chr10$Position), ]
+numeric_rows <- maize_chr10[!grepl("[^0-9]", maize_chr10$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+maize_chr10_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(maize_chr10_desc_sorted) <- NULL
+maize_chr10_desc_sorted[] <- lapply(maize_chr10_desc_sorted, function(x) gsub("\\?", "-", x))
+write.table(maize_chr10_desc_sorted, "maize_chr10_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+
+#Teosinte group
+
+#Extract columns SNP_ID|Chromosome|Position|ZMPBA|ZMPIL|ZMPJA from merged_data file to a new merged_teosinte_data file
+selected_columns <- grep("SNP_ID|Chromosome|Position|ZMPBA|ZMPIL|ZMPJA", names(merged_teosinte_data), value = TRUE)
+
+
+##Extract chromosome 1-10 data from merged_teosinte_data file
+#Extract chromosome 1 from merged_teosinte_data into a separate file directly into the working directory
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 1, ]), file = "teosinte_chr1.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+#Load the teosinte chromosome respective file from the working directory to the data frame
+teosinte_chr1 <- read.table("teosinte_chr1.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 2, ]), file = "teosinte_chr2.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr2 <- read.table("teosinte_chr2.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 3, ]), file = "teosinte_chr3.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr3 <- read.table("teosinte_chr3.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 4, ]), file = "teosinte_chr4.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr4 <- read.table("teosinte_chr4.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 5, ]), file = "teosinte_chr5.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr5 <- read.table("teosinte_chr5.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 6, ]), file = "teosinte_chr6.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr6 <- read.table("teosinte_chr6.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 7, ]), file = "teosinte_chr7.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr7 <- read.table("teosinte_chr7.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 8, ]), file = "teosinte_chr8.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr8 <- read.table("teosinte_chr8.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 9, ]), file = "teosinte_chr9.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr9 <- read.table("teosinte_chr9.txt", header = TRUE, sep = "\t")
+write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 10, ]), file = "teosinte_chr10.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+teosinte_chr10 <- read.table("teosinte_chr10.txt", header = TRUE, sep = "\t")
+
+##Sorting the chromosome data in increasing order for Positions column
+#For chromosome 1
+alphabetic_rows <- teosinte_chr1[grepl("[^0-9]", teosinte_chr1$Position), ]
+numeric_rows <- teosinte_chr1[!grepl("[^0-9]", teosinte_chr1$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr1_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+write.table(teosinte_chr1_asc_sorted, "teosinte_chr1_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 2
+alphabetic_rows <- teosinte_chr2[grepl("[^0-9]", teosinte_chr2$Position), ]
+numeric_rows <- teosinte_chr2[!grepl("[^0-9]", teosinte_chr2$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr2_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr2_asc_sorted) <- NULL
+write.table(teosinte_chr2_asc_sorted, "teosinte_chr2_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 3
+alphabetic_rows <- teosinte_chr3[grepl("[^0-9]", teosinte_chr3$Position), ]
+numeric_rows <- teosinte_chr3[!grepl("[^0-9]", teosinte_chr3$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr3_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr3_asc_sorted) <- NULL
+write.table(teosinte_chr3_asc_sorted, "teosinte_chr3_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 4
+alphabetic_rows <- teosinte_chr5[grepl("[^0-9]", teosinte_chr5$Position), ]
+numeric_rows <- teosinte_chr5[!grepl("[^0-9]", teosinte_chr5$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr5_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr5_asc_sorted) <- NULL
+write.table(teosinte_chr5_asc_sorted, "teosinte_chr5_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 6
+alphabetic_rows <- teosinte_chr6[grepl("[^0-9]", teosinte_chr6$Position), ]
+numeric_rows <- teosinte_chr6[!grepl("[^0-9]", teosinte_chr6$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr6_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr6_asc_sorted) <- NULL
+write.table(teosinte_chr6_asc_sorted, "teosinte_chr6_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 7
+alphabetic_rows <- teosinte_chr7[grepl("[^0-9]", teosinte_chr7$Position), ]
+numeric_rows <- teosinte_chr7[!grepl("[^0-9]", teosinte_chr7$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr7_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr7_asc_sorted) <- NULL
+write.table(teosinte_chr7_asc_sorted, "teosinte_chr7_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 8
+alphabetic_rows <- teosinte_chr8[grepl("[^0-9]", teosinte_chr8$Position), ]
+numeric_rows <- teosinte_chr8[!grepl("[^0-9]", teosinte_chr8$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr8_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr8_asc_sorted) <- NULL
+write.table(teosinte_chr8_asc_sorted, "teosinte_chr8_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 9
+alphabetic_rows <- teosinte_chr9[grepl("[^0-9]", teosinte_chr9$Position), ]
+numeric_rows <- teosinte_chr9[!grepl("[^0-9]", teosinte_chr9$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr9_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr9_asc_sorted) <- NULL
+write.table(teosinte_chr9_asc_sorted, "teosinte_chr9_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+#For chromosome 10
+alphabetic_rows <- teosinte_chr10[grepl("[^0-9]", teosinte_chr10$Position), ]
+numeric_rows <- teosinte_chr10[!grepl("[^0-9]", teosinte_chr10$Position), ]
+numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
+teosinte_chr10_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
+rownames(teosinte_chr10_asc_sorted) <- NULL
+write.table(teosinte_chr10_asc_sorted, "teosinte_chr10_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+
+#Code to change ? symbol to - for the decreasing order files
+teosinte_chr1[] <- lapply(teosinte_chr1, function(x) gsub("\\?", "-", x))
+
+#Sorted the Position column in decreasing order for teosinte chromosome 1 #didnot change the symbol yet
+alphabetic_rows <- teosinte_chr1[grepl("[^0-9]", teosinte_chr1$Position), ]
+numeric_rows <- teosinte_chr1[!grepl("[^0-9]", teosinte_chr1$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr1_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr1_desc_sorted) <- NULL
+teosinte_chr1_desc_sorted[] <- lapply(teosinte_chr1_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 2
+alphabetic_rows <- teosinte_chr2[grepl("[^0-9]", teosinte_chr2$Position), ]
+numeric_rows <- teosinte_chr2[!grepl("[^0-9]", teosinte_chr2$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr2_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr2_desc_sorted) <- NULL
+teosinte_chr2_desc_sorted[] <- lapply(teosinte_chr2_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 3
+alphabetic_rows <- teosinte_chr3[grepl("[^0-9]", teosinte_chr3$Position), ]
+numeric_rows <- teosinte_chr3[!grepl("[^0-9]", teosinte_chr3$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr3_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr3_desc_sorted) <- NULL
+teosinte_chr3_desc_sorted[] <- lapply(teosinte_chr3_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 4
+alphabetic_rows <- teosinte_chr4[grepl("[^0-9]", teosinte_chr4$Position), ]
+numeric_rows <- teosinte_chr4[!grepl("[^0-9]", teosinte_chr4$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr4_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr4_desc_sorted) <- NULL
+teosinte_chr4_desc_sorted[] <- lapply(teosinte_chr4_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 5
+alphabetic_rows <- teosinte_chr5[grepl("[^0-9]", teosinte_chr5$Position), ]
+numeric_rows <- teosinte_chr5[!grepl("[^0-9]", teosinte_chr5$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr5_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr5_desc_sorted) <- NULL
+teosinte_chr5_desc_sorted[] <- lapply(teosinte_chr5_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 6
+alphabetic_rows <- teosinte_chr6[grepl("[^0-9]", teosinte_chr6$Position), ]
+numeric_rows <- teosinte_chr6[!grepl("[^0-9]", teosinte_chr6$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr6_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr6_desc_sorted) <- NULL
+teosinte_chr6_desc_sorted[] <- lapply(teosinte_chr6_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 7
+alphabetic_rows <- teosinte_chr7[grepl("[^0-9]", teosinte_chr7$Position), ]
+numeric_rows <- teosinte_chr7[!grepl("[^0-9]", teosinte_chr7$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr7_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr7_desc_sorted) <- NULL
+teosinte_chr7_desc_sorted[] <- lapply(teosinte_chr7_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 8
+alphabetic_rows <- teosinte_chr8[grepl("[^0-9]", teosinte_chr8$Position), ]
+numeric_rows <- teosinte_chr8[!grepl("[^0-9]", teosinte_chr8$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr8_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr8_desc_sorted) <- NULL
+teosinte_chr8_desc_sorted[] <- lapply(teosinte_chr8_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 9
+alphabetic_rows <- teosinte_chr9[grepl("[^0-9]", teosinte_chr9$Position), ]
+numeric_rows <- teosinte_chr9[!grepl("[^0-9]", teosinte_chr9$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr9_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr9_desc_sorted) <- NULL
+teosinte_chr9_desc_sorted[] <- lapply(teosinte_chr9_desc_sorted, function(x) gsub("\\?", "-", x))
+#For chromosome 10
+alphabetic_rows <- teosinte_chr10[grepl("[^0-9]", teosinte_chr10$Position), ]
+numeric_rows <- teosinte_chr10[!grepl("[^0-9]", teosinte_chr10$Position), ]
+numeric_rows$Position <- as.numeric(numeric_rows$Position)
+numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
+teosinte_chr10_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
+rownames(teosinte_chr10_desc_sorted) <- NULL
+teosinte_chr10_desc_sorted[] <- lapply(teosinte_chr10_desc_sorted, function(x) gsub("\\?", "-", x))
+
+#Load decreasing order sorted files from data stream to the working directory
+write.table(teosinte_chr1_desc_sorted, "teosinte_chr1_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr2_desc_sorted, "teosinte_chr2_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr3_desc_sorted, "teosinte_chr3_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr4_desc_sorted, "teosinte_chr4_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr5_desc_sorted, "teosinte_chr5_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr6_desc_sorted, "teosinte_chr6_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr7_desc_sorted, "teosinte_chr7_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr8_desc_sorted, "teosinte_chr8_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr9_desc_sorted, "teosinte_chr9_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+write.table(teosinte_chr10_desc_sorted, "teosinte_chr10_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+
+
+#To plot the distribution of SNPs on and across chromosomes
+##Maize
+#To list the files in my directory
+ls() 
+#To install the ggplot2 package
+install.packages("ggplot2")
+library(ggplot2)
+snp_counts <- as.data.frame(table(merged_data_subset$Chromosome))
+colnames(snp_counts) <- c("Chromosome", "SNP_Count")
+
+#To plot the distribution of SNPs on and across chromosomes
+##Maize
+ggplot(snp_counts, aes(x = Chromosome, y = SNP_Count, fill = Chromosome)) +
+geom_bar(stat = "identity") +
+labs(title = "SNPs per Chromosome in Maize", x = "Chromosome", y = "Number of SNPs") +
+theme_minimal()
+
+#Saved the plot manually from the plots option - export
+#To plot the distribution of SNPs on and across chromosomes
+##Teosinte
+snp_counts_teosinte <- as.data.frame(table(merged_teosinte_data$Chromosome))
+colnames(snp_counts_teosinte) <- c("Chromosome", "SNP_Count")
+
+ggplot(snp_counts_teosinte, aes(x = Chromosome, y = SNP_Count, fill = Chromosome)) +
+geom_bar(stat = "identity") + labs(title = "SNPs per Chromosome in Teosinte", x = "Chromosome", y = "Number of SNPs") + theme_minimal()
+
+#SNP Distribution in Maize vs. Teosinte
+maize_snp_counts <- as.data.frame(table(merged_data_subset$Chromosome))
+maize_snp_counts$Species <- "Maize"
+teosinte_snp_counts <- as.data.frame(table(merged_teosinte_data$Chromosome))
+teosinte_snp_counts$Species <- "Teosinte"
+snp_comparison <- rbind(maize_snp_counts, teosinte_snp_counts)
+colnames(snp_comparison) <- c("Chromosome", "SNP_Count", "Species")
+
+ggplot(snp_comparison, aes(x = Chromosome, y = SNP_Count, fill = Species)) +
+geom_bar(stat = "identity", position = "dodge") +
+labs(title = "SNPs per Chromosome in Maize vs Teosinte", x = "Chromosome", y = "Number of SNPs") +
+theme_minimal()
+
+
+##Own Visualization - Density  of SNP positions along a chromosome
+#Maize
+ggplot(merged_data_subset, aes(x = as.numeric(Position))) +
+geom_density(fill = "blue", alpha = 0.5) +
+labs(title = "Density of SNP Positions in Maize", x = "Genomic Position", y = "Density") +
+theme_minimal()
+
+#Teosinte
+ggplot(merged_teosinte_data, aes(x = as.numeric(Position))) +
+geom_density(fill = "blue", alpha = 0.5) +
+labs(title = "Density of SNP Positions in Teosinte", x = "Genomic Position", y = "Density") +
+theme_minimal()
+
+```
+
+
+
