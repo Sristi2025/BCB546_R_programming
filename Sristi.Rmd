@@ -527,6 +527,38 @@ geom_density(fill = "blue", alpha = 0.5) +
 labs(title = "Density of SNP Positions in Teosinte", x = "Genomic Position", y = "Density") +
 theme_minimal()
 
+#Zygosity plot
+library(tidyverse)
+process_and_plot <- function(df, group_label) {
+long_df <- df %>%
+    pivot_longer(
+      cols = 4:ncol(df),
+      names_to = "Sample",
+      values_to = "Genotype"
+    ) %>%
+      mutate(Zygosity = case_when(
+      is.na(Genotype) | Genotype == "." ~ "Missing",
+      Genotype %in% c("A/A", "C/C", "G/G", "T/T") ~ "Homozygous",
+      TRUE ~ "Heterozygous"
+    ))
+
+p <- ggplot(long_df, aes(x = Sample, fill = Zygosity)) +
+    geom_bar(position = "fill") +
+    labs(
+      title = paste("Proportion of Zygosity Types per Sample (", group_label, ")", sep = ""),
+      x = "Sample", y = "Proportion"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  print(p)
+}
+
+process_and_plot(merged_data_subset, "Maize")
+process_and_plot(merged_teosinte_data, "Teosinte")
+
+
+
+
 ```
 
 
