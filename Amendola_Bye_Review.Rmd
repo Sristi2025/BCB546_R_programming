@@ -12,7 +12,7 @@ I got an error on line 79 when running the code - object 'merged_data_subset' no
 
 You have multiple view(dataframe) calls in your code - it's helpful when working on it to troubleshoot but doesn't need to be included in the final version.
 
-For sorting each chromosome by position, you can sort the entire maize or teosinte file by position numerically, and then split to save a step instead of splitting, sorting, and then resaving. You don't need to export the unsorted data as .txt and then sort, you can keep it as a data frame and not have as many intermediate files.
+A lot of the code is dedicated to sorting the chromosome files individually. You could condense this by sorting the entire maize or teosinte SNP files ascending and descending (with the -/- replacement) and then splitting into separate files for each chromosome. There are a lot of intermediate files being produced that don't need to be exported to .txt, they can stay as data frames and then get written to a file once finished with sorting.
 
 # Data visualization
 The code for the plots looks for merged_data_subset - this object was missing earlier, so it should be causing issues with the plots.
