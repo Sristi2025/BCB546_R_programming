@@ -1,0 +1,24 @@
+---
+title: "Amendola_Bye_Review"
+output: html_document
+---
+
+# General comments
+I would highly recommend splitting the code into smaller chunks and adding comments to the chunks. This helps with readability and also with troubleshooting, if an error comes up in one chunk it may not affect everything downstream.
+
+It looks like you're reading the data files for the genotypes from GitHub multiple times - this only needs to be done once at the beginning, any modifications can be saved to a different data frame so you only need to read the source file once 
+
+I got an error on line 79 when running the code - object 'merged_data_subset' not found. Was there a line that generates merged_data_subset from the SNP and genotype data that got deleted? Lines 76/77 are blank, so I'm guessing that's where the merge code is supposed to be. The rest of the script doesn't work without the merge.
+
+You have multiple view(dataframe) calls in your code - it's helpful when working on it to troubleshoot but doesn't need to be included in the final version.
+
+For sorting each chromosome by position, you can sort the entire maize or teosinte file by position numerically, and then split to save a step instead of splitting, sorting, and then resaving. You don't need to export the unsorted data as .txt and then sort, you can keep it as a data frame and not have as many intermediate files.
+
+# Data visualization
+The code for the plots looks for merged_data_subset - this object was missing earlier, so it should be causing issues with the plots.
+
+For the density plots, it may be helpful to plot for each chromosome - they're not all the same length - facet_wrap can help with this
+
+For the number of SNPs per chromosome, you can use as.numeric(Position) for the x axis to make sure the graph ends up in order
+
+For the zygosity plots, you may want to remove the x axis text to make the plots cleaner as there's so many samples - you can use theme(axis.text.x=element_blank())
