@@ -10,6 +10,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+#Loading necessary files
 url_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/fang_et_al_genotypes.txt"
 print(url_genotypes)
 url_snp_position <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/snp_position.txt"
@@ -35,6 +36,7 @@ num_lines_snp_position <- length(count.fields(url_snp_position, sep = "\t"))
 str(transposed)
 str(snp_position) 
 
+#Merging
 new_header <- as.character(transposed[2, ])  
 transposed_no_header <- transposed[-c(1, 2), ]  
 colnames(transposed_no_header) <- new_header
