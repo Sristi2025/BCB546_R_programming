@@ -25,13 +25,15 @@ snp_position <- read.table(url_snp_position, header = TRUE, sep = "\t", stringsA
 head(genotypes)  
 head(genotypes)
 head(snp_position)
-str(genotypes)
-str(snp_position)
-str(transposed)
+str(genotypes) # 2782 observations of  986 variables
+str(snp_position) # 983 observations of  2783 variables
+str(transposed) # 985 obs. of  2783 variable
 dim(genotypes) # 2782 observations, 986 variables
 dim(snp_position) # 983 observations, 15 variables
-object.size(genotypes)
-object.size(snp_position)
+dim(transposed) # 985 variables, 2783 observations
+object.size(genotypes) # 22681376 bytes
+object.size(snp_position) # 327392 bytes
+object.size(transposed) # 24358128 bytes
 num_lines_snp_position <- length(count.fields(url_snp_position, sep = "\t"))
 ```
 
