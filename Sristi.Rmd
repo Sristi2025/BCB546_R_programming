@@ -9,7 +9,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
 
+```{r load data}
 url_genotypes <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/fang_et_al_genotypes.txt"
 print(url_genotypes)
 url_snp_position <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2024/refs/heads/main/assignments/UNIX_Assignment/snp_position.txt"
@@ -17,24 +19,23 @@ url_transposed <- "https://raw.githubusercontent.com/EEOB-BioData/BCB546_Spring2
 transposed <- read.table(url_transposed, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 genotypes <- read.table(url_genotypes, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 snp_position <- read.table(url_snp_position, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+```
 
-# Inspection
+```{r insepct data}
 head(genotypes)  
 head(genotypes)
 head(snp_position)
 str(genotypes)
 str(snp_position)
-dim(genotypes)
-dim(snp_position)
+str(transposed)
+dim(genotypes) # 2782 observations, 986 variables
+dim(snp_position) # 983 observations, 15 variables
 object.size(genotypes)
 object.size(snp_position)
 num_lines_snp_position <- length(count.fields(url_snp_position, sep = "\t"))
+```
 
-
-# Check the structure of the loaded data to ensure it's a data frame
-str(transposed)
-str(snp_position) 
-
+```{r merge data}
 new_header <- as.character(transposed[2, ])  
 transposed_no_header <- transposed[-c(1, 2), ]  
 colnames(transposed_no_header) <- new_header
@@ -42,18 +43,19 @@ colnames(transposed_no_header)[colnames(transposed_no_header) == "Group"] <- "SN
 merged_data <- merge(snp_position, transposed_no_header, by = "SNP_ID")
 selected_columns <- grep("SNP_ID|Chromosome|Position|ZMMIL|ZMMLR|ZMMMR", names(merged_data), value = TRUE)
 merged_data_subset <- merged_data[, selected_columns]
+```
 
-#Inspect to confirm the samples in the file
+```{r inspect samples in merged data}
 count_headers_with_ZMMIL <- sum(grepl("ZMMIL", colnames(merged_data_subset))) #To count the number of headers that have ZMMIL
 print(count_headers_with_ZMMIL) #[1] 290
 count_headers_with_ZMMLR <- sum(grepl("ZMMLR", colnames(merged_data_subset))) #To count the number of headers that have ZMMLR
 print(count_headers_with_ZMMLR) #[1] 1256
 count_headers_with_ZMMMR <- sum(grepl("ZMMMR", colnames(merged_data_subset))) #To count the number of headers that have ZMMMR
 print(count_headers_with_ZMMMR) #[1] 27
+```
 
 
-
-#Extract chromosome 1-10 data from merged_data_subset file
+```{r extract data from merged file}
 write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 1, ]), file = "maize_chr1.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 2, ]), file = "maize_chr2.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 3, ]), file = "maize_chr3.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
@@ -65,7 +67,9 @@ write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_s
 write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 8, ]), file = "maize_chr8.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 9, ]), file = "maize_chr9.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 write.table(rbind(colnames(merged_data_subset), merged_data_subset[merged_data_subset[, 2] == 10, ]), file = "maize_chr10.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+```
 
+```{r read files into data frame}
 maize_chr1 <- read.table("maize_chr1.txt", header = TRUE, sep = "\t")
 maize_chr2 <- read.table("maize_chr2.txt", header = TRUE, sep = "\t")
 maize_chr3 <- read.table("maize_chr3.txt", header = TRUE, sep = "\t")
@@ -76,8 +80,10 @@ maize_chr7 <- read.table("maize_chr7.txt", header = TRUE, sep = "\t")
 maize_chr8 <- read.table("maize_chr8.txt", header = TRUE, sep = "\t")
 maize_chr9 <- read.table("maize_chr9.txt", header = TRUE, sep = "\t")
 maize_chr10 <- read.table("maize_chr10.txt", header = TRUE, sep = "\t")
+```
 
-##Sorting the chromosome data in increasing order for Positions column
+
+```{r sort maize increasing files}
 #For chromosome 1
 # Separate alphabetic and numeric positions
 alphabetic_rows <- maize_chr1[grepl("[^0-9]", maize_chr1$Position), ]
@@ -154,8 +160,9 @@ numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
 maize_chr10_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
 rownames(maize_chr10_sorted) <- NULL
 write.table(maize_chr10_sorted, "maize_chr10_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+```
 
-##Sorting the chromosome data in decreasing order for Positions column
+```{r sort maize decreasing files}
 #For chromosome 1
 alphabetic_rows <- maize_chr1[grepl("[^0-9]", maize_chr1$Position), ]
 numeric_rows <- maize_chr1[!grepl("[^0-9]", maize_chr1$Position), ]
@@ -246,15 +253,16 @@ maize_chr10_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
 rownames(maize_chr10_desc_sorted) <- NULL
 maize_chr10_desc_sorted[] <- lapply(maize_chr10_desc_sorted, function(x) gsub("\\?", "-", x))
 write.table(maize_chr10_desc_sorted, "maize_chr10_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
-
+```
 #Teosinte group
 
-#Extract columns SNP_ID|Chromosome|Position|ZMPBA|ZMPIL|ZMPJA from merged_data file to a new merged_teosinte_data file
+```{r merge teosinte file}
 selected_columns <- grep("SNP_ID|Chromosome|Position|ZMPBA|ZMPIL|ZMPJA", names(merged_data), value = TRUE)
 merged_teosinte_data <- merged_data[, selected_columns]
+```
 
 
-##Extract chromosome 1-10 data from merged_teosinte_data file
+```{r sort teosinte chromosome files}
 #Extract chromosome 1 from merged_teosinte_data into a separate file directly into the working directory
 write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 1, ]), file = "teosinte_chr1.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 #Load the teosinte chromosome respective file from the working directory to the data frame
@@ -277,8 +285,9 @@ write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_te
 teosinte_chr9 <- read.table("teosinte_chr9.txt", header = TRUE, sep = "\t")
 write.table(rbind(colnames(merged_teosinte_data), merged_teosinte_data[merged_teosinte_data[, 2] == 10, ]), file = "teosinte_chr10.txt", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 teosinte_chr10 <- read.table("teosinte_chr10.txt", header = TRUE, sep = "\t")
+```
 
-##Sorting the chromosome data in increasing order for Positions column
+```{r sort teosinte increasing files}
 #For chromosome 1
 alphabetic_rows <- teosinte_chr1[grepl("[^0-9]", teosinte_chr1$Position), ]
 numeric_rows <- teosinte_chr1[!grepl("[^0-9]", teosinte_chr1$Position), ]
@@ -348,11 +357,13 @@ numeric_rows_sorted <- numeric_rows[order(as.numeric(numeric_rows$Position)), ]
 teosinte_chr10_asc_sorted <- rbind(alphabetic_rows, numeric_rows_sorted)
 rownames(teosinte_chr10_asc_sorted) <- NULL
 write.table(teosinte_chr10_asc_sorted, "teosinte_chr10_asc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+```
 
-#Code to change ? symbol to - for the decreasing order files
+```{r teosinte part}
 teosinte_chr1[] <- lapply(teosinte_chr1, function(x) gsub("\\?", "-", x))
+```
 
-#Sorted the Position column in decreasing order for teosinte chromosome 1 #didnot change the symbol yet
+```{r sort teosinte decreasing files}
 alphabetic_rows <- teosinte_chr1[grepl("[^0-9]", teosinte_chr1$Position), ]
 numeric_rows <- teosinte_chr1[!grepl("[^0-9]", teosinte_chr1$Position), ]
 numeric_rows$Position <- as.numeric(numeric_rows$Position)
@@ -432,8 +443,9 @@ numeric_rows <- numeric_rows[order(-numeric_rows$Position), ]
 teosinte_chr10_desc_sorted <- rbind(numeric_rows, alphabetic_rows)
 rownames(teosinte_chr10_desc_sorted) <- NULL
 teosinte_chr10_desc_sorted[] <- lapply(teosinte_chr10_desc_sorted, function(x) gsub("\\?", "-", x))
+```
 
-#Load decreasing order sorted files from data stream to the working directory
+```{r load files}
 write.table(teosinte_chr1_desc_sorted, "teosinte_chr1_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
 write.table(teosinte_chr2_desc_sorted, "teosinte_chr2_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
 write.table(teosinte_chr3_desc_sorted, "teosinte_chr3_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
@@ -444,9 +456,9 @@ write.table(teosinte_chr7_desc_sorted, "teosinte_chr7_desc_sorted.txt", row.name
 write.table(teosinte_chr8_desc_sorted, "teosinte_chr8_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
 write.table(teosinte_chr9_desc_sorted, "teosinte_chr9_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
 write.table(teosinte_chr10_desc_sorted, "teosinte_chr10_desc_sorted.txt", row.names = FALSE, col.names = TRUE, sep = "\t", quote = FALSE)
+```
 
-
-#To plot the distribution of SNPs on and across chromosomes
+```{r distribution of SNPs on and across chromosomes maize}
 ##Maize
 #To list the files in my directory
 ls() 
@@ -455,24 +467,30 @@ install.packages("ggplot2")
 library(ggplot2)
 snp_counts <- as.data.frame(table(merged_data_subset$Chromosome))
 colnames(snp_counts) <- c("Chromosome", "SNP_Count")
+snp_counts$Chromosome <- factor(snp_counts$Chromosome, 
+                                levels = c(as.character(1:10), "multiple", "unknown"),
+                                ordered = TRUE)
 
-#To plot the distribution of SNPs on and across chromosomes
-##Maize
 ggplot(snp_counts, aes(x = Chromosome, y = SNP_Count, fill = Chromosome)) +
-geom_bar(stat = "identity") +
-labs(title = "SNPs per Chromosome in Maize", x = "Chromosome", y = "Number of SNPs") +
-theme_minimal()
+  geom_bar(stat = "identity") +
+  labs(title = "SNPs per Chromosome in Maize", x = "Chromosome", y = "Number of SNPs") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
 
-#Saved the plot manually from the plots option - export
-#To plot the distribution of SNPs on and across chromosomes
-##Teosinte
+```{r distribution of SNPs on and across chromosomes teosinte}
+
 snp_counts_teosinte <- as.data.frame(table(merged_teosinte_data$Chromosome))
 colnames(snp_counts_teosinte) <- c("Chromosome", "SNP_Count")
 
 ggplot(snp_counts_teosinte, aes(x = Chromosome, y = SNP_Count, fill = Chromosome)) +
-geom_bar(stat = "identity") + labs(title = "SNPs per Chromosome in Teosinte", x = "Chromosome", y = "Number of SNPs") + theme_minimal()
+  geom_bar(stat = "identity") +
+  labs(title = "SNPs per Chromosome in Teosinte", x = "Chromosome", y = "Number of SNPs") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
 
-#SNP Distribution in Maize vs. Teosinte
+```{r SNP Distribution in Maize vs. Teosinte}
 maize_snp_counts <- as.data.frame(table(merged_data_subset$Chromosome))
 maize_snp_counts$Species <- "Maize"
 teosinte_snp_counts <- as.data.frame(table(merged_teosinte_data$Chromosome))
@@ -480,23 +498,69 @@ teosinte_snp_counts$Species <- "Teosinte"
 snp_comparison <- rbind(maize_snp_counts, teosinte_snp_counts)
 colnames(snp_comparison) <- c("Chromosome", "SNP_Count", "Species")
 
+snp_comparison$Chromosome <- factor(snp_comparison$Chromosome, 
+                                levels = c(as.character(1:10), "multiple", "unknown"),
+                                ordered = TRUE)
 ggplot(snp_comparison, aes(x = Chromosome, y = SNP_Count, fill = Species)) +
 geom_bar(stat = "identity", position = "dodge") +
 labs(title = "SNPs per Chromosome in Maize vs Teosinte", x = "Chromosome", y = "Number of SNPs") +
-theme_minimal()
+theme_minimal() +  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
-
-##Own Visualization - Density  of SNP positions along a chromosome
-#Maize
+```{r Density  of SNP positions across a chromosome maize}
 ggplot(merged_data_subset, aes(x = as.numeric(Position))) +
 geom_density(fill = "blue", alpha = 0.5) +
 labs(title = "Density of SNP Positions in Maize", x = "Genomic Position", y = "Density") +
 theme_minimal()
 
-#Teosinte
+chromosome_levels <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "multiple", "unknown")
+merged_data_subset$Chromosome <- factor(merged_data_subset$Chromosome, levels = chromosome_levels)
+
+#Sort density of maize by chromosomes
+ggplot(merged_data_subset, aes(x = as.numeric(Position))) + geom_density(fill = "blue", alpha = 0.5) + facet_wrap(~ Chromosome, scales = "free_x", ncol = 5) + labs(title = "Density of SNP Positions in Maize by Chromosome", x = "Genomic Position", y = "Density") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r Density  of SNP positions across a chromosome teosinte}
 ggplot(merged_teosinte_data, aes(x = as.numeric(Position))) +
 geom_density(fill = "blue", alpha = 0.5) +
 labs(title = "Density of SNP Positions in Teosinte", x = "Genomic Position", y = "Density") +
 theme_minimal()
+
+#Sort density of Teosinte by chromosomes
+ggplot(merged_teosinte_data, aes(x = as.numeric(Position))) + geom_density(fill = "blue", alpha = 0.5) + facet_wrap(~ Chromosome, scales = "free_x", ncol = 5) + labs (title = "Density of SNP Positions in Teosinte by Chromosome", 
+x = "Genomic Position", y = "Density") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+```{r zygosity}
+library(tidyverse)
+process_and_plot <- function(df, group_label) {
+long_df <- df %>%
+    pivot_longer(
+      cols = 4:ncol(df),
+      names_to = "Sample",
+      values_to = "Genotype"
+    ) %>%
+    # Create a new column to indicate zygosity
+    mutate(Zygosity = case_when(
+      is.na(Genotype) | Genotype == "." ~ "Missing",
+      Genotype %in% c("A/A", "C/C", "G/G", "T/T") ~ "Homozygous",
+      TRUE ~ "Heterozygous"
+    ))
+
+p <- ggplot(long_df, aes(x = Sample, fill = Zygosity)) +
+    geom_bar(position = "fill") +
+    labs(
+      title = paste("Proportion of Zygosity Types per Sample (", group_label, ")", sep = ""),
+      x = "Sample", y = "Proportion"
+    ) +
+  theme(axis.text.x=element_blank())
+
+  
+  print(p)
+}
+
+process_and_plot(merged_data_subset, "Maize")
+process_and_plot(merged_teosinte_data, "Teosinte")
+
 
 ```
