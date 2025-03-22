@@ -2,7 +2,7 @@
 
 `Sristi.Rmd`: R markdown file from Rstudio contains all the codes
 
-Plots: Teosinte: `Density of teosinte by chromosomes edited` `SNPs per chromosome in Maize vs Teosinte edited` `SNPs per chromosome in Teosinte edited` `Teosinte zygosity plot` Maize: `Density of maize by chromosomes edited` `Maize zygosity plot` `SNPs per chromosome in Maize edited` `SNPs per chromosome in Maize vs Teosinte edited` edited plots after replication of suggestions from other people
+Plots: Teosinte: `Density of teosinte by chromosomes edited` `SNPs per chromosome in Maize vs Teosinte edited` `SNPs per chromosome in Teosinte edited` `Teosinte zygosity plot` Maize: `Density of maize by chromosomes edited` `Maize zygosity plot` `SNPs per chromosome in Maize edited` `SNPs per chromosome in Maize vs Teosinte edited` implemented changes on request of reviewers
 
 `All`: this file contains all the main and sub files that I generated during the assignment as a backup
 
