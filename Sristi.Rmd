@@ -482,8 +482,7 @@ ggplot(snp_counts, aes(x = Chromosome, y = SNP_Count, fill = Chromosome)) +
 
 ```{r distribution of SNPs on and across chromosomes teosinte}
 
-snp_counts_teosinte <- as.data.frame(table(merged_teosinte_data$Chromosome))
-colnames(snp_counts_teosinte) <- c("Chromosome", "SNP_Count")
+snp_counts_teosinte$Chromosome <- factor(snp_counts_teosinte$Chromosome, levels = c(as.character(1:10), "multiple", "unknown"), ordered = TRUE)
 
 ggplot(snp_counts_teosinte, aes(x = Chromosome, y = SNP_Count, fill = Chromosome)) +
   geom_bar(stat = "identity") +
